@@ -143,6 +143,9 @@ public class SocialMediaController {
     
     private void accountIDMessagesGetHandler(Context context){
         //context.pathParam("account_id");
-        throw new NotImplementedError();
+
+        List<Message> messages = messageService.getAllMessagesForUser(context.pathParam("account_id"));
+        context.json(messages);
+        context.status(200);
     }
 }

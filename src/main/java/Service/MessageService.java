@@ -24,6 +24,10 @@ public class MessageService {
         return messageDAO.getAllMessages();
     }
 
+    public List<Message> getAllMessagesForUser(String idString) {
+        return messageDAO.getAllMessagesForUser(idString);
+    }
+
     public Message getMessageWithID(String idString) {
         return messageDAO.getMessageWithID(idString);
     }
