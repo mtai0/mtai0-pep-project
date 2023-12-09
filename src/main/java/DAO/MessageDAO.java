@@ -112,4 +112,45 @@ public class MessageDAO {
 
         return null;
     }
+
+    public Message deleteMessageWithID(String idString) {
+
+        //Make sure the id is actually an int
+        int messageID = 0;
+        try {
+            messageID = Integer.parseInt(idString);
+        } catch(NumberFormatException e)
+        {
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String query = "SELECT * FROM Message WHERE message_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, messageID);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next())
+            {
+                Message m = new Message();
+                m.setMessage_id(rs.getInt("message_id"));
+                m.setPosted_by(rs.getInt("posted_by"));
+                m.setMessage_text(rs.getString("message_text"));
+                m.setTime_posted_epoch(rs.getLong("time_posted_epoch"));
+
+                //Delete the message from the database before returning it
+                String deleteString = "DELETE FROM Message WHERE message_id = ?;";
+                PreparedStatement deleteStatement = connection.prepareStatement(deleteString);
+                deleteStatement.setInt(1, m.getMessage_id());
+                deleteStatement.execute();
+
+                return m;
+            }
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
 }

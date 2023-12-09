@@ -27,4 +27,8 @@ public class MessageService {
     public Message getMessageWithID(String idString) {
         return messageDAO.getMessageWithID(idString);
     }
+
+    public Message deleteMessageWithID(String idString) {
+        return messageDAO.deleteMessageWithID(idString);
+    }
 }

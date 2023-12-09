@@ -105,17 +105,20 @@ public class SocialMediaController {
     
     private void messageIDGetHandler(Context context) throws JsonProcessingException {
         Message message = messageService.getMessageWithID(context.pathParam("message_id"));
-        if (message != null)
-        {
+        if (message != null) {
             ObjectMapper mapper = new ObjectMapper();
             context.json(mapper.writeValueAsString(message));
         }
         context.status(200);
     }
     
-    private void messageIDDeleteHandler(Context context){
-        //context.pathParam("message_id");
-        throw new NotImplementedError();
+    private void messageIDDeleteHandler(Context context) throws JsonProcessingException {
+        Message message = messageService.deleteMessageWithID(context.pathParam("message_id"));
+        if (message != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            context.json(mapper.writeValueAsString(message));
+        }
+        context.status(200);
     }
     
     private void messageIDPatchHandler(Context context){
