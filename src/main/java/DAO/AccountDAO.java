@@ -1,11 +1,10 @@
 package DAO;
 import Model.Account;
-import Model.Message;
 import Util.ConnectionUtil;
 
 import java.sql.*;
 
-public class ForumDAO {
+public class AccountDAO {
     public Account registerAccount(Account account) {
         //Validate username/password meets criteria
         if (account.getUsername().length() <= 0 || account.getPassword().length() < 4) return null;
@@ -27,7 +26,8 @@ public class ForumDAO {
                 PreparedStatement preparedStatement = connection.prepareStatement(insertString);
                 preparedStatement.setString(1, account.getUsername());
                 preparedStatement.setString(2, account.getPassword());
-                preparedStatement.executeUpdate();
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected <= 0) return null;
 
                 //Return the newly-added account
                 String findAccount = "SELECT * FROM Account WHERE username = ?;";
@@ -51,7 +51,7 @@ public class ForumDAO {
 
     public Account loginAccount(Account account){
         Connection connection = ConnectionUtil.getConnection();
-        try{
+        try {
             String selectString = "SELECT * FROM Account WHERE username = ? AND password = ?;"; {
                 PreparedStatement preparedStatement = connection.prepareStatement(selectString);
                 preparedStatement.setString(1, account.getUsername());
@@ -59,8 +59,7 @@ public class ForumDAO {
     
                 //If there is ANYTHING in the query for the given username, do not register the account and immediately stop.
                 ResultSet rs = preparedStatement.executeQuery();
-                if (rs.next())
-                {
+                if (rs.next()) {
                     Account toReturn = new Account();
                     toReturn.setAccount_id(rs.getInt("account_id"));
                     toReturn.setUsername(rs.getString("username"));
@@ -68,7 +67,7 @@ public class ForumDAO {
                     return toReturn;
                 }
             }
-        }catch(SQLException e){
+        } catch(SQLException e){
             System.out.println(e.getMessage());
         }
 

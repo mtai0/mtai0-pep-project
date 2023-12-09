@@ -1,27 +1,27 @@
 package Service;
 
-import DAO.ForumDAO;
+import DAO.AccountDAO;
 import Model.Account;
 
 public class AccountService {
-    private ForumDAO forumDAO;
+    private AccountDAO forumDAO;
     
     public AccountService()
     {
-        forumDAO = new ForumDAO();
+        forumDAO = new AccountDAO();
     }
 
-    public AccountService(ForumDAO forumDAO)
+    public AccountService(AccountDAO forumDAO)
     {
         this.forumDAO = forumDAO;
     }
 
-    public Account register(Account account)
+    public Account registerAccount(Account account)
     {
         return forumDAO.registerAccount(account);
     }
 
-    public Account login(Account account)
+    public Account loginAccount(Account account)
     {
         return forumDAO.loginAccount(account);
     }

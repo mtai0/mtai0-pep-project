@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import Model.Account;
 import Model.Message;
 import Service.AccountService;
+import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import kotlin.NotImplementedError;
@@ -17,10 +18,12 @@ import kotlin.NotImplementedError;
  */
 public class SocialMediaController {
     AccountService accountService;
+    MessageService messageService;
 
     public SocialMediaController()
     {
         accountService = new AccountService();
+        messageService = new MessageService();
     }
 
     /**
@@ -45,11 +48,11 @@ public class SocialMediaController {
         return app;
     }
 
-    private void registerPostHandler(Context context) throws JsonProcessingException{
+    private void registerPostHandler(Context context) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account newAccount = mapper.readValue(context.body(), Account.class);
 
-        Account returnedAccount = accountService.register(newAccount);
+        Account returnedAccount = accountService.registerAccount(newAccount);
 
         if (returnedAccount != null) {
             context.json(mapper.writeValueAsString(returnedAccount));
@@ -60,12 +63,11 @@ public class SocialMediaController {
         }
     }
     
-    private void loginPostHandler(Context context) throws JsonProcessingException{
+    private void loginPostHandler(Context context) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account newAccount = mapper.readValue(context.body(), Account.class);
 
-        
-        Account returnedAccount = accountService.login(newAccount);
+        Account returnedAccount = accountService.loginAccount(newAccount);
         if (returnedAccount != null)
         {
             context.json(mapper.writeValueAsString(returnedAccount));
@@ -77,8 +79,20 @@ public class SocialMediaController {
         }
     }
 
-    private void messagesPostHandler(Context context){
-        throw new NotImplementedError();
+    private void messagesPostHandler(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message newMessage = mapper.readValue(context.body(), Message.class);
+
+        Message returnedMessage = messageService.postMessage(newMessage);
+        if (returnedMessage != null)
+        {
+            context.json(mapper.writeValueAsString(returnedMessage));
+            context.status(200);
+        }
+        else
+        {
+            context.status(400);
+        }
     }
 
     private void messagesGetHandler(Context context){
