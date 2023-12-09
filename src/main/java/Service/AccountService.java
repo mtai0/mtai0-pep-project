@@ -16,8 +16,13 @@ public class AccountService {
         this.forumDAO = forumDAO;
     }
 
-    public Account RegisterAccount(Account account)
+    public Account register(Account account)
     {
         return forumDAO.registerAccount(account);
+    }
+
+    public Account login(Account account)
+    {
+        return forumDAO.loginAccount(account);
     }
 }

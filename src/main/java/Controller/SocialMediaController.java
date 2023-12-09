@@ -46,13 +46,26 @@ public class SocialMediaController {
     }
 
     private void registerPostHandler(Context context) throws JsonProcessingException{
-        //Parse JSON from context
-
         ObjectMapper mapper = new ObjectMapper();
         Account newAccount = mapper.readValue(context.body(), Account.class);
 
-        Account returnedAccount = accountService.RegisterAccount(newAccount);
+        Account returnedAccount = accountService.register(newAccount);
 
+        if (returnedAccount != null) {
+            context.json(mapper.writeValueAsString(returnedAccount));
+            context.status(200);
+        }
+        else {
+            context.status(400);
+        }
+    }
+    
+    private void loginPostHandler(Context context) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Account newAccount = mapper.readValue(context.body(), Account.class);
+
+        
+        Account returnedAccount = accountService.login(newAccount);
         if (returnedAccount != null)
         {
             context.json(mapper.writeValueAsString(returnedAccount));
@@ -60,12 +73,8 @@ public class SocialMediaController {
         }
         else
         {
-            context.status(400);
+            context.status(401);
         }
-    }
-    
-    private void loginPostHandler(Context context){
-        throw new NotImplementedError();
     }
 
     private void messagesPostHandler(Context context){
