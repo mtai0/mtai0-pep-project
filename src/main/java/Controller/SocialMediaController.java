@@ -12,7 +12,6 @@ import Service.AccountService;
 import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import kotlin.NotImplementedError;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -58,7 +57,7 @@ public class SocialMediaController {
         Account returnedAccount = accountService.registerAccount(newAccount);
 
         if (returnedAccount != null) {
-            context.json(mapper.writeValueAsString(returnedAccount));
+            context.json(returnedAccount);
             context.status(200);
         }
         else {
@@ -73,7 +72,7 @@ public class SocialMediaController {
         Account returnedAccount = accountService.loginAccount(newAccount);
         if (returnedAccount != null)
         {
-            context.json(mapper.writeValueAsString(returnedAccount));
+            context.json(returnedAccount);
             context.status(200);
         }
         else
@@ -89,7 +88,7 @@ public class SocialMediaController {
         Message returnedMessage = messageService.postMessage(newMessage);
         if (returnedMessage != null)
         {
-            context.json(mapper.writeValueAsString(returnedMessage));
+            context.json(returnedMessage);
             context.status(200);
         }
         else
@@ -107,8 +106,7 @@ public class SocialMediaController {
     private void messageIDGetHandler(Context context) throws JsonProcessingException {
         Message message = messageService.getMessageWithID(context.pathParam("message_id"));
         if (message != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            context.json(mapper.writeValueAsString(message));
+            context.json(message);
         }
         context.status(200);
     }
@@ -116,8 +114,7 @@ public class SocialMediaController {
     private void messageIDDeleteHandler(Context context) throws JsonProcessingException {
         Message message = messageService.deleteMessageWithID(context.pathParam("message_id"));
         if (message != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            context.json(mapper.writeValueAsString(message));
+            context.json(message);
         }
         context.status(200);
     }
@@ -133,7 +130,7 @@ public class SocialMediaController {
 
         Message message = messageService.patchMessage(pathParam, messageText);
         if (message != null) {
-            context.json(mapper.writeValueAsString(message));
+            context.json(message);
             context.status(200);
         }
         else {
@@ -143,7 +140,6 @@ public class SocialMediaController {
     
     private void accountIDMessagesGetHandler(Context context){
         //context.pathParam("account_id");
-
         List<Message> messages = messageService.getAllMessagesForUser(context.pathParam("account_id"));
         context.json(messages);
         context.status(200);
