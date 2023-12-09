@@ -10,7 +10,8 @@ import java.util.List;
 public class MessageDAO {
     public Message postMessage(Message message) {
         //Pre-check message length
-        if (message.getMessage_text().length() > 255 || message.getMessage_text().length() <= 0) return null;
+        int textLength = message.getMessage_text().length();
+        if (textLength> 255 || textLength <= 0) return null;
 
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -85,8 +86,7 @@ public class MessageDAO {
         int messageID = 0;
         try {
             messageID = Integer.parseInt(idString);
-        } catch(NumberFormatException e)
-        {
+        } catch(NumberFormatException e) {
             System.out.println(e.getMessage());
             return null;
         }
@@ -119,8 +119,7 @@ public class MessageDAO {
         int messageID = 0;
         try {
             messageID = Integer.parseInt(idString);
-        } catch(NumberFormatException e)
-        {
+        } catch(NumberFormatException e) {
             System.out.println(e.getMessage());
             return null;
         }
@@ -150,6 +149,59 @@ public class MessageDAO {
         } catch(SQLException e){
             System.out.println(e.getMessage());
         }
+
+        return null;
+    }
+
+    public Message patchMessage(String idString, String newText)
+    {
+        //Make sure text length is within limits
+        int textLength = newText.length();
+        if (textLength > 255 || textLength <= 0) return null;
+
+        //Make sure the id is actually an int
+        int messageID = 0;
+        try {
+            messageID = Integer.parseInt(idString);
+        } catch(NumberFormatException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String query = "SELECT * FROM Message WHERE message_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, messageID);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                String update = "UPDATE Message SET message_text = ? WHERE message_id = ?;";
+                PreparedStatement updateStatement = connection.prepareStatement(update);
+                updateStatement.setString(1, newText);
+                updateStatement.setInt(2, messageID);
+                int rowsAffected = updateStatement.executeUpdate();
+                if (rowsAffected <= 0) return null;
+
+                String query2 = "SELECT * FROM Message WHERE message_id = ?;";
+                PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+                preparedStatement2.setInt(1, messageID);
+                ResultSet rs2 = preparedStatement2.executeQuery();
+                if (rs2.next())
+                {
+                    Message m2 = new Message();
+                    m2.setMessage_id(rs2.getInt("message_id"));
+                    m2.setPosted_by(rs2.getInt("posted_by"));
+                    m2.setMessage_text(rs2.getString("message_text"));
+                    m2.setTime_posted_epoch(rs2.getLong("time_posted_epoch"));
+
+                    return m2;
+                }
+            }
+
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
 
         return null;
     }

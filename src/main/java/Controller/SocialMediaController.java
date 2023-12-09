@@ -3,6 +3,7 @@ package Controller;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
@@ -121,9 +122,23 @@ public class SocialMediaController {
         context.status(200);
     }
     
-    private void messageIDPatchHandler(Context context){
-        //context.pathParam("message_id");
-        throw new NotImplementedError();
+    private void messageIDPatchHandler(Context context) throws JsonProcessingException {
+        String pathParam = context.pathParam("message_id");
+        String body = context.body();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(body);
+        JsonNode textField = node.get("message_text");
+        String messageText = textField != null ? textField.asText("") : "";
+
+        Message message = messageService.patchMessage(pathParam, messageText);
+        if (message != null) {
+            context.json(mapper.writeValueAsString(message));
+            context.status(200);
+        }
+        else {
+            context.status(400);
+        }
     }
     
     private void accountIDMessagesGetHandler(Context context){
