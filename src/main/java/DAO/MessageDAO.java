@@ -3,8 +3,8 @@ import Model.Message;
 import Util.ConnectionUtil;
 
 import java.sql.*;
-
-import org.h2.command.Prepared;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MessageDAO {
@@ -39,8 +39,7 @@ public class MessageDAO {
                 queryStatement.setString(2, message.getMessage_text());
                 queryStatement.setLong(3, message.getTime_posted_epoch());
                 ResultSet rs = queryStatement.executeQuery();
-                if (rs.next())
-                {
+                if (rs.next()) {
                     Message toReturn = new Message();
                     toReturn.setMessage_id(rs.getInt("message_id"));
                     toReturn.setPosted_by(rs.getInt("posted_by"));
@@ -53,6 +52,64 @@ public class MessageDAO {
         } catch(SQLException e){
             System.out.println(e.getMessage());
         }
+        return null;
+    }
+
+    public List<Message> getAllMessages() {
+        List<Message> toReturn = new ArrayList<Message>();
+
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String query = "SELECT * FROM Message;";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next())
+            {
+                Message m = new Message();
+                m.setMessage_id(rs.getInt("message_id"));
+                m.setPosted_by(rs.getInt("posted_by"));
+                m.setMessage_text(rs.getString("message_text"));
+                m.setTime_posted_epoch(rs.getLong("time_posted_epoch"));
+                toReturn.add(m);
+            }
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return toReturn;
+    }
+
+    public Message getMessageWithID(String idString) {
+
+        //Make sure the id is actually an int
+        int messageID = 0;
+        try {
+            messageID = Integer.parseInt(idString);
+        } catch(NumberFormatException e)
+        {
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            String query = "SELECT * FROM Message WHERE message_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, messageID);
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next())
+            {
+                Message m = new Message();
+                m.setMessage_id(rs.getInt("message_id"));
+                m.setPosted_by(rs.getInt("posted_by"));
+                m.setMessage_text(rs.getString("message_text"));
+                m.setTime_posted_epoch(rs.getLong("time_posted_epoch"));
+                return m;
+            }
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
         return null;
     }
 }

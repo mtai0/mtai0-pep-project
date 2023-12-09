@@ -1,5 +1,7 @@
 package Controller;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -95,13 +97,20 @@ public class SocialMediaController {
         }
     }
 
-    private void messagesGetHandler(Context context){
-        throw new NotImplementedError();
+    private void messagesGetHandler(Context context) throws JsonProcessingException {
+        List<Message> allMessages = messageService.getAllMessages();
+        context.json(allMessages);
+        context.status(200);
     }
     
-    private void messageIDGetHandler(Context context){
-        //context.pathParam("message_id");
-        throw new NotImplementedError();
+    private void messageIDGetHandler(Context context) throws JsonProcessingException {
+        Message message = messageService.getMessageWithID(context.pathParam("message_id"));
+        if (message != null)
+        {
+            ObjectMapper mapper = new ObjectMapper();
+            context.json(mapper.writeValueAsString(message));
+        }
+        context.status(200);
     }
     
     private void messageIDDeleteHandler(Context context){
